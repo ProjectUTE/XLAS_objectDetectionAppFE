@@ -1,24 +1,34 @@
-import logo from './logo.svg';
-import './App.css';
+import { useEffect, useState } from 'react';
+import { Switch, Route } from 'react-router-dom';
+import { ThemeContext } from './context';
+import { MainLayout } from './layouts';
+import { Home, Demo } from './pages';
 
 function App() {
+  const [theme, setTheme] = useState(
+    () => JSON.parse(localStorage.getItem('theme')) || false
+  );
+  const value = { theme, setTheme };
+
+  useEffect(() => {
+    const className = 'dark-theme';
+    theme
+      ? document.body.classList.add(className)
+      : document.body.classList.remove(className);
+
+    // Set theme in local storage
+    localStorage.setItem('theme', JSON.stringify(theme));
+  }, [theme]);
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <ThemeContext.Provider value={value}>
+      <MainLayout>
+        <Switch>
+          <Route path={`/`} exact component={Home} />
+          <Route path={`/demo`} component={Demo} />
+        </Switch>
+      </MainLayout>
+    </ThemeContext.Provider>
   );
 }
 
